@@ -47,9 +47,6 @@ if(isset($_REQUEST['submit'])){
     }elseif(strlen($password) < 6){/////this is rull about characters
     $errors['password']='can not lower than six character';
     }
-    
-    }
-    
     if(!empty($email) && !empty($password) && strlen($password)>=6){
       $inputPass =  md5($password);
             $insertquery = $link->prepare("INSERT INTO users (email , password) values (? , ?)");
@@ -57,10 +54,18 @@ if(isset($_REQUEST['submit'])){
             $result=$insertquery->execute();
 
 }
+    }
+
+if(isset($_REQUEST['delete-user'])){
+$userId = intval(request('user-id'));
+$deletequery = $link->prepare("DELETE FROM users WHERE id=?");
+// die(var_dump($deletequery));
+$deletequery ->bind_param("d", $userId);
+$deleteResult=$deletequery->execute();
+}
 
 // fetch users
 $selectquery = "select * from users ORDER by id DESC ";
-
 ?>
 
 
@@ -102,13 +107,19 @@ $selectquery = "select * from users ORDER by id DESC ";
 <div class="container mt-3">
   <h2>data from Database</h2>
   <br>
+  <?=  (isset($deleteResult) && $deleteResult) ?  'deleted' : ":/";  ?>
+
+
   <?php if( $result = mysqli_query($link , $selectquery)) { ?>
+
   <table class="table table-bordered">
     <thead>
       <tr>
         <th>password</th>
         <th>Email</th>
-        <th>operation</th>
+        <th>Del</th>
+        <th>Upd</th>
+
       </tr>
     
     </thead>
@@ -119,24 +130,24 @@ $selectquery = "select * from users ORDER by id DESC ";
                     <td><?= $user['password'] ?></td>
                         <td><?= $user['email'] ?></td>
                         <td>
-                          <form method="post" action="./pro.php" name="delete-user">
+                          <form method="post" action="./pro.php" >
                             <input type="hidden" name="user-id" value="<?= $user['id'] ?>"> 
-                            <button type="submit" class="btn btn-danger">Delete</button>                      
+                            <button type="submit" class="btn btn-danger" name='delete-user'>Delete</button>                      
+                          </form>
+                        </td>
+                        <td>
+                          <form method="post" action="./pro.php" name="Update-user">
+                            <input type="hidden" name="user-id" value="<?= $user['id'] ?>"> 
+                            <button type="submit" class="btn btn-success">Update</button>                      
                           </form>
                         </td>
                     </tr>
                     <?php } ?>
-
     </tbody>
   </table>
     <?php }else{ ?>
       <div class="alert alert-warning">No data!!!</div>
     <?php } ?>
-
-
-    
-
-
 </div>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
