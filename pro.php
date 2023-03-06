@@ -37,8 +37,9 @@ if(isset($_REQUEST['submit'])){
     }elseif(strlen($password) < 6){/////this is rull about characters
     $errors['password']='can not lower than six character';
     }
+    
     }
-
+    
     if(!empty($email) && !empty($password) && strlen($password)>=6){
         $link=mysqli_connect('localhost:3306','root','');
 
@@ -111,7 +112,9 @@ if(isset($_REQUEST['submit'])){
       <tr>
         <th>password</th>
         <th>Email</th>
+        <th>operation</th>
       </tr>
+    
     </thead>
     <tbody>
 
@@ -119,9 +122,15 @@ if(isset($_REQUEST['submit'])){
                     <tr>
                     <td><?= $user['password'] ?></td>
                         <td><?= $user['email'] ?></td>
-                        
+                        <td>
+                          <form method="post" action="./pro.php" name="delete-user">
+                            <input type="hidden" name="user-id" value="<?= $user['id'] ?>"> 
+                            <button type="submit" class="btn btn-danger">Delete</button>                      
+                          </form>
+                        </td>
                     </tr>
                     <?php } ?>
+
     </tbody>
   </table>
 </div>
