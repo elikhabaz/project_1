@@ -1,5 +1,5 @@
 <?php
-$selectquery = "select * from users ORDER by id DESC ";
+require_once('./helper/db.php');////import db
 
 function request($field) {
     return isset($_REQUEST[$field]) && $_REQUEST[$field] != "" ? trim($_REQUEST[$field]) : null;
@@ -19,6 +19,16 @@ function get_error($field) {
 
 $errors = [];
 $succses=false;
+
+
+  // $link=mysqli_connect('localhost:3306','root','');
+
+  //           if(! $link){
+  //               echo 'could not connect: ' . mysqli_connect_error();
+  //               exit;
+  //           }
+  //           mysqli_select_db($link ,'zarindb');
+
 
 
 if(isset($_REQUEST['submit'])){
@@ -41,30 +51,15 @@ if(isset($_REQUEST['submit'])){
     }
     
     if(!empty($email) && !empty($password) && strlen($password)>=6){
-        $link=mysqli_connect('localhost:3306','root','');
-
-            if(! $link){
-                echo 'could not connect: ' . mysqli_connect_error();
-                exit;
-            }
-
-            mysqli_select_db($link ,'zarindb');
-
-            // $selectquery = "select * from users ORDER by id DESC ";
-
+      $inputPass =  md5($password);
             $insertquery = $link->prepare("INSERT INTO users (email , password) values (? , ?)");
-            $insertquery ->bind_param("ss", $email,$password);////bind sql query
-
+            $insertquery ->bind_param("ss", $email,$inputPass );////bind sql query
             $result=$insertquery->execute();
 
-            if( $result = mysqli_query($link , $selectquery) ) {
-            } else {
-                echo 'error : ' . mysqli_error($link);
-                exit;
-            }
-
-
 }
+
+// fetch users
+$selectquery = "select * from users ORDER by id DESC ";
 
 ?>
 
@@ -107,6 +102,7 @@ if(isset($_REQUEST['submit'])){
 <div class="container mt-3">
   <h2>data from Database</h2>
   <br>
+  <?php if( $result = mysqli_query($link , $selectquery)) { ?>
   <table class="table table-bordered">
     <thead>
       <tr>
@@ -133,6 +129,14 @@ if(isset($_REQUEST['submit'])){
 
     </tbody>
   </table>
+    <?php }else{ ?>
+      <div class="alert alert-warning">No data!!!</div>
+    <?php } ?>
+
+
+    
+
+
 </div>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
