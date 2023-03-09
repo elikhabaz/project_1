@@ -1,5 +1,9 @@
 <?php
+
 require_once('./helper/db.php');////import db
+
+$errors = [];
+$succses=false;
 
 function request($field) {
     return isset($_REQUEST[$field]) && $_REQUEST[$field] != "" ? trim($_REQUEST[$field]) : null;
@@ -7,7 +11,6 @@ function request($field) {
 
 function has_error($field) {
     global $errors;
-
     return isset($errors[$field]);
 }
 
@@ -17,30 +20,14 @@ function get_error($field) {
     return has_error($field) ? $errors[$field] : null;
 }
 
-$errors = [];
-$succses=false;
-
-
-  // $link=mysqli_connect('localhost:3306','root','');
-
-  //           if(! $link){
-  //               echo 'could not connect: ' . mysqli_connect_error();
-  //               exit;
-  //           }
-  //           mysqli_select_db($link ,'zarindb');
-
-
-
 if(isset($_REQUEST['submit'])){
     $email=request('email');
     $password=request('password');
     // die($email . $password);
 
-
     if(empty($email)){
         $errors['email']='can not empty';
     }
-
     if(empty($password)){
      $errors['password']='can not empty';
 
@@ -52,8 +39,7 @@ if(isset($_REQUEST['submit'])){
             $insertquery = $link->prepare("INSERT INTO users (email , password) values (? , ?)");
             $insertquery ->bind_param("ss", $email,$inputPass );////bind sql query
             $result=$insertquery->execute();
-
-}
+      }
     }
 
 if(isset($_REQUEST['delete-user'])){
@@ -138,7 +124,8 @@ $selectquery = "select * from users ORDER by id DESC ";
                         <td>
                           <form method="post" action="./pro.php" name="Update-user">
                             <input type="hidden" name="user-id" value="<?= $user['id'] ?>"> 
-                            <button type="submit" class="btn btn-success">Update</button>                      
+                            <!-- <button type="submit" class="btn btn-success">Update</button>                       -->
+                            <a href="edit.php?id=<?= $user['id'] ?>" class="btn btn-success">edit</a>
                           </form>
                         </td>
                     </tr>
