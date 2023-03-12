@@ -56,6 +56,7 @@ if($_SERVER['REQUEST_METHOD']=="POST" && !is_null($user)){
   <h2>Example</h2>
   <p>Please change email & password :</p>
 
+
 <form action="edit.php?id=<?=$user['id']?>" method="post">
     <div class="row">
 
